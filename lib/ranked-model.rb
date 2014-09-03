@@ -53,8 +53,13 @@ module RankedModel
           instance_variable_set "@#{ranker.name}_position", position
         end
       end
+      define_method "position" do
+        position_value = send(ranker.name)
+        return nil unless position_value
+        self.class.send(ranker.scope).where("#{ranker.name} < ?", position_value).count
+      end
 
-      public "#{ranker.name}_position", "#{ranker.name}_position="
+      public "#{ranker.name}_position", "#{ranker.name}_position=", :position
     end
 
   end
