@@ -54,9 +54,11 @@ module RankedModel
         end
       end
       define_method "position" do
-        position_value = send(ranker.name)
-        return nil unless position_value
-        self.class.send(ranker.scope).where("#{ranker.name} < ?", position_value).count
+        @position ||= begin
+          position_value = send(ranker.name)
+          return nil unless position_value
+          self.class.send(ranker.scope).where("#{ranker.name} < ?", position_value).count
+        end
       end
 
       public "#{ranker.name}_position", "#{ranker.name}_position=", :position
