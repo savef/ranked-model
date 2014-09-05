@@ -57,7 +57,9 @@ module RankedModel
         @position ||= begin
           position_value = send(ranker.name)
           return nil unless position_value
-          self.class.send(ranker.scope).where("#{ranker.name} < ?", position_value).count
+
+          where_lower = self.class.send(ranker.scope).where("#{ranker.name} < ?", position_value)
+          (id ? where_lower.where("id != ?", id) : where_lower).count
         end
       end
 
